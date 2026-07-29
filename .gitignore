@@ -1,0 +1,37 @@
+# Secrets - never commit credentials. API keys come from environment variables only.
+.env
+.env.*
+secrets.json
+credentials.json
+
+# Dataset - fetched on demand via `python cli.py fetch-data`
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Model cache
+.cache/
+hf_cache/
+
+# Tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
