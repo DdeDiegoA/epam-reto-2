@@ -1,0 +1,26 @@
+# Sentiment Analysis API - pinned dependencies
+#
+# Versions below are the exact ones verified on Python 3.11 (macOS arm64) and
+# captured from `pip freeze`. They are not guesses.
+#
+# On Linux/amd64, install with the PyTorch CPU index to avoid pulling ~800 MB
+# of unused CUDA wheels:
+#
+#   pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
+#
+# Use --extra-index-url (never --index-url): arm64 has no "+cpu" build, so pip
+# must be able to fall back to PyPI's (already CPU-only) aarch64 wheel.
+
+# --- Web API ---
+fastapi==0.141.1
+uvicorn[standard]==0.52.0
+
+# --- AI model: local backend (MODEL_BACKEND=local, the default) ---
+transformers==5.14.1
+torch==2.13.0
+
+# --- AI model: remote backend (MODEL_BACKEND=hf) ---
+huggingface_hub==1.25.1
+
+# --- Required by fastapi.testclient.TestClient in the test suite ---
+httpx==0.28.1

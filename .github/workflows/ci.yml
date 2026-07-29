@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
+
+      - name: Run tests
+        env:
+          MODEL_BACKEND: local
+        run: |
+          python -m unittest discover -s tests -t . -v
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: sentiment-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Health check and smoke test
+        run: |
+          # Start the container in the background
+          docker run -d --name sentiment-test -p 8000:8000 sentiment-api:ci
+
+          # Wait for the service to be healthy, with bounded retries
+          echo "Waiting for service to start..."
+          for i in {1..30}; do
+            if python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).read()" 2>/dev/null; then
+              echo "Service is healthy"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Health check failed after 30 attempts"
+              docker logs sentiment-test
+              docker stop sentiment-test || true
+              docker rm sentiment-test || true
+              exit 1
+            fi
+            sleep 1
+          done
+
+          # Run smoke test
+          echo "Running smoke test..."
+          RESPONSE=$(curl -s -X POST http://127.0.0.1:8000/analyze \
+            -H "Content-Type: application/json" \
+            -d '{"text":"I love this."}')
+
+          echo "Response: $RESPONSE"
+
+          if echo "$RESPONSE" | grep -q "positive"; then
+            echo "Smoke test passed"
+          else
+            echo "Smoke test failed: response does not contain 'positive'"
+            docker logs sentiment-test
+            docker stop sentiment-test || true
+            docker rm sentiment-test || true
+            exit 1
+          fi
+
+          # Clean up
+          docker stop sentiment-test || true
+          docker rm sentiment-test || true
