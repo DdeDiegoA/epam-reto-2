@@ -7,6 +7,11 @@ credentials.json
 # Dataset - fetched on demand via `python cli.py fetch-data`
 data/
 
+# Agent tooling - may contain auth tokens; not part of the deliverable
+.claude/
+.specify/
+specs/
+
 # Python
 __pycache__/
 *.py[cod]
