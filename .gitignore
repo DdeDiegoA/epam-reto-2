@@ -10,8 +10,10 @@ data/
 # Agent tooling - may contain auth tokens; not part of the deliverable
 .claude/
 .specify/
-specs/
 graphify-out/
+
+# Documentation is tracked in docs/ (except generated artefacts)
+# specs/ consolidated under docs/specs/ — tracked for traceability
 
 # Python
 __pycache__/
@@ -41,3 +43,5 @@ htmlcov/
 .idea/
 .vscode/
 *.swp
+CLAUDE.local.md
+AGENTS.local.md

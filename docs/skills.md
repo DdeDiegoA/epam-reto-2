@@ -1,0 +1,213 @@
+# Available Skills
+> Detected by protto on 2026-07-29.
+
+## Personal Skills
+
+- `abogado-del-diablo`
+- `accessibility`
+- `agent-delegation`
+- `agent-server-hardware`
+- `agent-tooling-bootstrap`
+- `airtable`
+- `algorithmic-art`
+- `all-deploy`
+- `architecture-diagram`
+- `arxiv`
+- `ascii-art`
+- `ascii-video`
+- `autoplan`
+- `baoyu-infographic`
+- `benchmark`
+- `benchmark-models`
+- `best-practices`
+- `blogwatcher`
+- `brand-guidelines`
+- `browse`
+- `business-opportunity`
+- `canary`
+- `canvas-design`
+- `careful`
+- `clarification-skill`
+- `claude-api`
+- `claude-design`
+- `codex`
+- `coding-agents`
+- `computer-use`
+- `context-restore`
+- `context-save`
+- `core-web-vitals`
+- `cso`
+- `data-engineer`
+- `design-consultation`
+- `design-html`
+- `design-md`
+- `design-review`
+- `design-shotgun`
+- `devex-review`
+- `diagram`
+- `doc-coauthoring`
+- `document-generate`
+- `document-release`
+- `docx`
+- `dogfood`
+- `elementor-json`
+- `excalidraw`
+- `findmy`
+- `freeze`
+- `frontend-design`
+- `gif-search`
+- `github-auth`
+- `github-code-review`
+- `github-issues`
+- `github-pr-workflow`
+- `github-repo-management`
+- `graphify`
+- `graphify-research`
+- `graphify-root`
+- `graphify-setup`
+- `grill-me`
+- `gstack`
+- `gstack-upgrade`
+- `guard`
+- `handoff`
+- `health`
+- `heartmula`
+- `hermes-agent`
+- `hermes-agent-skill-authoring`
+- `hermes-self-learning`
+- `huggingface-hub`
+- `humanizer`
+- `internal-comms`
+- `investigate`
+- `ios-clean`
+- `ios-design-review`
+- `ios-fix`
+- `ios-qa`
+- `ios-sync`
+- `jupyter-live-kernel`
+- `kanban-orchestrator`
+- `kanban-worker`
+- `land-and-deploy`
+- `landing-report`
+- `learn`
+- `legacy-webapp-audit`
+- `llm-council`
+- `llm-wiki`
+- `make-pdf`
+- `manim-video`
+- `maps`
+- `marketing-copy`
+- `mcp-builder`
+- `mcp-integration`
+- `multi-agent-architecture`
+- `naming`
+- `nano-pdf`
+- `node-inspect-debugger`
+- `obsidian`
+- `office-hours`
+- `open-design-integration`
+- `open-gstack-browser`
+- `openhue`
+- `p5js`
+- `pair-agent`
+- `pdf`
+- `performance`
+- `petdex`
+- `plan`
+- `plan-ceo-review`
+- `plan-design-review`
+- `plan-devex-review`
+- `plan-eng-review`
+- `plan-tune`
+- `polymarket`
+- `popular-web-designs`
+- `powerpoint`
+- `pptx`
+- `pretext`
+- `project-bootstrap`
+- `protto`
+- `proyecto-lean`
+- `python-debugpy`
+- `qa`
+- `qa-gate`
+- `qa-only`
+- `repo-audit`
+- `requesting-code-review`
+- `research-paper-writing`
+- `retro`
+- `review`
+- `scrape`
+- `self-hosted-deploy`
+- `seo`
+- `server-provisioning`
+- `setup-browser-cookies`
+- `setup-deploy`
+- `setup-gbrain`
+- `ship`
+- `simplify-code`
+- `sketch`
+- `skill-creator`
+- `skillify`
+- `slack-gif-creator`
+- `social-media-knowledge-capture`
+- `songsee`
+- `songwriting-and-ai-music`
+- `spec`
+- `speckit-analyze`
+- `speckit-checklist`
+- `speckit-clarify`
+- `speckit-constitution`
+- `speckit-converge`
+- `speckit-implement`
+- `speckit-plan`
+- `speckit-specify`
+- `speckit-tasks`
+- `speckit-taskstoissues`
+- `spike`
+- `sync-gbrain`
+- `systematic-debugging`
+- `tauri-cicd`
+- `teach`
+- `teams-meeting-pipeline`
+- `terminal-multisession-workflow`
+- `test-driven-development`
+- `theme-factory`
+- `touchdesigner-mcp`
+- `unfreeze`
+- `vault-governance`
+- `vault-knowledge-graph`
+- `video-watch`
+- `watch`
+- `web-app-auditing`
+- `web-artifacts-builder`
+- `web-performance-audit`
+- `web-quality-audit`
+- `webapp-testing`
+- `write-a-skill`
+- `xlsx`
+- `youtube-content`
+- `yuanbao`
+
+## Agent Skills
+Add skills you install under `.claude/skills/` or `.opencode/skills/`.
+
+## Suggested Post-Setup Workflow
+
+- **`agent-delegation`**: Delega tareas aisladas con agent-delegation
+- **`architecture-diagram`**: Diagrama la arquitectura con architecture-diagram
+- **`arxiv`**: Busca papers relevantes en arxiv
+- **`business-opportunity`**: Valida oportunidad de negocio con business-opportunity
+- **`excalidraw`**: Crea wireframes con excalidraw
+- **`graphify`**: Genera el knowledge graph del proyecto: ejecuta al inicio y tras cada tarea
+- **`grill-me`**: Valida el plan con /grill-me antes de implementar
+- **`llm-council`**: Usa llm-council para validar decisiones de arquitectura
+- **`naming`**: Usa naming para validar nombres de proyecto/módulos
+- **`open-design-integration`**: Integra Open Design para diseño visual iterativo
+- **`plan`**: Genera un plan de acción detallado con /plan
+- **`proyecto-lean`**: Usa proyecto-lean como orquestador para proyectos multi-fase
+- **`requesting-code-review`**: Configura code review pre-commit con requesting-code-review
+- **`speckit-clarify`**: Usa /speckit-clarify si el spec tiene ambigüedades
+- **`speckit-plan`**: Usa /speckit-plan para generar el plan de implementación
+- **`speckit-specify`**: Usa /speckit-specify para crear el spec.md del proyecto
+- **`vault-governance`**: Captura decisiones en el vault con vault-governance
+- **`youtube-content`**: Investiga contenido relevante en YouTube con youtube-content
