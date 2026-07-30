@@ -42,7 +42,8 @@ sentiment.py:analyze()
   │   │   └→ _run_hf() (Hugging Face API)
   │   └→ [cache hit]
   ├→ normalize label
-  └→ return {"text", "label", "score", "model", "revision", "backend", "cached"}
+  └→ return {"text", "label", "score", "model", "revision", "backend", "cached", "request_id", "timestamp"}
+     (request_id and timestamp generated fresh per call, never cached, present on cache hits too)
 
 Rate Limit Middleware (app.py only)
   ↓

@@ -240,7 +240,7 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
     processed = 0
     next_report = 200
     for chunk in _chunked(texts, sentiment.MAX_BATCH_SIZE):
-        predictions.extend(sentiment.analyze_batch(chunk))
+        predictions.extend(sentiment.analyze_batch(chunk)["results"])
         processed += len(chunk)
         if processed >= next_report:
             print(f"...processed {processed}/{len(texts)}", file=sys.stderr)

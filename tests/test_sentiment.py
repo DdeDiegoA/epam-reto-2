@@ -165,13 +165,59 @@ class CacheTests(unittest.TestCase):
     def test_analyze_batch_reuses_cache_for_repeated_items(self) -> None:
         backend, calls = _counting_backend()
         with mock.patch.dict(sentiment._BACKENDS, {sentiment.BACKEND: backend}):
-            results = sentiment.analyze_batch(["dup", "dup", "unique"])
+            batch = sentiment.analyze_batch(["dup", "dup", "unique"])
 
         # "dup" classified once, "unique" once => 2 backend calls total.
         self.assertEqual(len(calls), 2)
+        results = batch["results"]
         self.assertFalse(results[0]["cached"])
         self.assertTrue(results[1]["cached"])
         self.assertFalse(results[2]["cached"])
+
+    def test_cached_classify_rejects_out_of_range_score(self) -> None:
+        backend = _backend_returning("POSITIVE", 1.5)
+        with mock.patch.dict(sentiment._BACKENDS, {sentiment.BACKEND: backend}):
+            with self.assertRaises(sentiment.BackendError) as ctx:
+                sentiment.analyze("bad score")
+        self.assertEqual(ctx.exception.code, "unexpected_upstream_response")
+
+        # The bad value must not be retained in the cache: size stays 0, and
+        # (unlike a real cached entry) a repeat call re-runs the backend and
+        # raises again rather than silently returning the invalid score.
+        stats = sentiment.cache_stats()
+        self.assertEqual(stats["size"], 0)
+        self.assertEqual(stats["hits"], 0)
+
+        with mock.patch.dict(sentiment._BACKENDS, {sentiment.BACKEND: backend}):
+            with self.assertRaises(sentiment.BackendError):
+                sentiment.analyze("bad score")
+
+    def test_cached_classify_rejects_negative_score(self) -> None:
+        backend = _backend_returning("NEGATIVE", -0.1)
+        with mock.patch.dict(sentiment._BACKENDS, {sentiment.BACKEND: backend}):
+            with self.assertRaises(sentiment.BackendError) as ctx:
+                sentiment.analyze("bad score again")
+        self.assertEqual(ctx.exception.code, "unexpected_upstream_response")
+
+
+class BatchAggregationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        sentiment.clear_cache()
+
+    def tearDown(self) -> None:
+        sentiment.clear_cache()
+
+    def test_aggregate_counts_and_avg_score_for_mixed_cache_hit_miss(self) -> None:
+        backend = _backend_returning("POSITIVE", 0.8)
+        with mock.patch.dict(sentiment._BACKENDS, {sentiment.BACKEND: backend}):
+            sentiment.analyze("seen before")  # warm the cache for one item
+            batch = sentiment.analyze_batch(["seen before", "brand new"])
+
+        self.assertEqual(set(batch.keys()), {"results", "cache_hits", "cache_misses", "avg_score"})
+        self.assertEqual(len(batch["results"]), 2)
+        self.assertEqual(batch["cache_hits"], 1)
+        self.assertEqual(batch["cache_misses"], 1)
+        self.assertAlmostEqual(batch["avg_score"], 0.8)
 
 
 class ResultShapeTests(unittest.TestCase):
@@ -188,13 +234,32 @@ class ResultShapeTests(unittest.TestCase):
 
         self.assertEqual(
             set(result.keys()),
-            {"text", "label", "score", "model", "revision", "backend", "cached"},
+            {
+                "text",
+                "label",
+                "score",
+                "model",
+                "revision",
+                "backend",
+                "cached",
+                "request_id",
+                "timestamp",
+            },
         )
         self.assertIsInstance(result["score"], float)
         self.assertEqual(result["score"], round(result["score"], 4))
         self.assertEqual(result["model"], sentiment.MODEL_ID)
         self.assertEqual(result["revision"], sentiment.MODEL_REVISION)
         self.assertEqual(result["backend"], sentiment.BACKEND)
+
+    def test_request_id_is_fresh_per_call_even_on_cache_hit(self) -> None:
+        backend, _ = _counting_backend()
+        with mock.patch.dict(sentiment._BACKENDS, {sentiment.BACKEND: backend}):
+            first = sentiment.analyze("same text")
+            second = sentiment.analyze("same text")
+
+        self.assertTrue(second["cached"])
+        self.assertNotEqual(first["request_id"], second["request_id"])
 
 
 class RateLimiterTests(unittest.TestCase):

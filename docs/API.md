@@ -57,7 +57,9 @@ Classify a single text.
   "model": "distilbert-base-uncased-finetuned-sst-2-english",
   "revision": "714eb0fa89d2f80546fda750413ed43d93601a13",
   "backend": "local",
-  "cached": false
+  "cached": false,
+  "request_id": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+  "timestamp": "2026-07-29T18:30:45.123456+00:00"
 }
 ```
 
@@ -104,9 +106,14 @@ Classify 1–64 texts in one request.
       "model": "distilbert-base-uncased-finetuned-sst-2-english",
       "revision": "714eb0fa89d2f80546fda750413ed43d93601a13",
       "backend": "local",
-      "cached": false
+      "cached": false,
+      "request_id": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7",
+      "timestamp": "2026-07-29T18:30:46.234567+00:00"
     }
-  ]
+  ],
+  "cache_hits": 1,
+  "cache_misses": 2,
+  "avg_score": 0.8765
 }
 ```
 

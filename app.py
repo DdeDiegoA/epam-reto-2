@@ -97,11 +97,16 @@ class AnalyzeResponse(BaseModel):
     revision: str
     backend: str
     cached: bool
+    request_id: str
+    timestamp: str
 
 
 class BatchResponse(BaseModel):
     count: int
     results: list[AnalyzeResponse]
+    cache_hits: int
+    cache_misses: int
+    avg_score: float
 
 
 class HealthResponse(BaseModel):
@@ -241,8 +246,14 @@ async def analyze(payload: AnalyzeRequest) -> dict[str, Any]:
 
 @app.post("/analyze/batch", response_model=BatchResponse)
 async def analyze_batch(payload: BatchRequest) -> dict[str, Any]:
-    results = sentiment.analyze_batch(payload.texts)
-    return {"count": len(results), "results": results}
+    batch_result = sentiment.analyze_batch(payload.texts)
+    return {
+        "count": len(batch_result["results"]),
+        "results": batch_result["results"],
+        "cache_hits": batch_result["cache_hits"],
+        "cache_misses": batch_result["cache_misses"],
+        "avg_score": batch_result["avg_score"],
+    }
 
 
 if __name__ == "__main__":

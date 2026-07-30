@@ -45,6 +45,14 @@
 
 **When to upgrade:** If the service runs for weeks with high throughput, switch to Redis for shared, memory-bounded cache (no local-state restructuring needed; same LRU keying scheme).
 
+## Score Bounds Validation Before Caching
+
+**Decision:** `_cached_classify()` validates that the backend's score is in the range [0.0, 1.0] before returning, raising `BackendError` code `unexpected_upstream_response` if out-of-range.
+
+**Why:** Prevents a malformed upstream response (e.g., a broken model or corrupted API response) from poisoning the cache permanently. With no TTL, a bad value would be cached forever. Validation upstream of the cache ensures the cache only holds valid data.
+
+**Trade-off:** Adds a numeric comparison per non-cached request. Negligible overhead (~nanoseconds). The cost is more than paid back by avoiding cache corruption.
+
 ## Sliding-Window Rate Limiter
 
 **Decision:** Sliding-window log (deque per IP, thread-safe) instead of fixed-window counters.

@@ -34,8 +34,10 @@ import logging
 import os
 import threading
 import time
+import uuid
 from collections import deque
 from collections.abc import Callable
+from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -262,6 +264,14 @@ def _cached_classify(backend: str, model_id: str, revision: str, text: str) -> t
     # No TTL: a pinned model revision scoring a fixed input string is a pure
     # function of its arguments, so a cached result can never go stale.
     raw_label, score = _BACKENDS[backend]([text])[0]
+    if not 0.0 <= score <= 1.0:
+        # Checked before returning so a bad value never enters the lru_cache
+        # (it would otherwise be cached forever -- no TTL, see above).
+        raise BackendError(
+            "unexpected_upstream_response",
+            f"Backend returned out-of-range score {score!r} for label {raw_label!r}",
+            502,
+        )
     return _normalize_label(raw_label), score
 
 
@@ -337,12 +347,24 @@ def analyze(text: str) -> dict:
         "revision": MODEL_REVISION,
         "backend": BACKEND,
         "cached": cached,
+        # Per-call metadata: generated here, never cached, so a cache hit
+        # still gets its own fresh request_id/timestamp.
+        "request_id": uuid.uuid4().hex,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
 
-def analyze_batch(texts: list[str]) -> list[dict]:
+def analyze_batch(texts: list[str]) -> dict:
     texts = validate_batch(texts)
-    return [analyze(text) for text in texts]
+    results = [analyze(text) for text in texts]
+    cache_hits = sum(1 for r in results if r["cached"])
+    avg_score = sum(r["score"] for r in results) / len(results) if results else 0.0
+    return {
+        "results": results,
+        "cache_hits": cache_hits,
+        "cache_misses": len(results) - cache_hits,
+        "avg_score": avg_score,
+    }
 
 
 def backend_info() -> dict:

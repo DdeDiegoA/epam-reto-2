@@ -53,9 +53,13 @@ class AnalyzeEndpointTests(unittest.TestCase):
         body = response.json()
         self.assertEqual(
             set(body.keys()),
-            {"text", "label", "score", "model", "revision", "backend", "cached"},
+            {"text", "label", "score", "model", "revision", "backend", "cached", "request_id", "timestamp"},
         )
         self.assertEqual(body["label"], "positive")
+        self.assertIsInstance(body["request_id"], str)
+        self.assertTrue(len(body["request_id"]) > 0)
+        self.assertIsInstance(body["timestamp"], str)
+        self.assertTrue(len(body["timestamp"]) > 0)
 
     def test_analyze_empty_text_returns_422_with_uniform_error_body(self) -> None:
         response = client.post("/analyze", json={"text": ""})
@@ -87,6 +91,12 @@ class AnalyzeEndpointTests(unittest.TestCase):
         body = response.json()
         self.assertEqual(body["count"], 2)
         self.assertEqual(len(body["results"]), 2)
+        self.assertIn("cache_hits", body)
+        self.assertIn("cache_misses", body)
+        self.assertIn("avg_score", body)
+        self.assertIsInstance(body["cache_hits"], int)
+        self.assertIsInstance(body["cache_misses"], int)
+        self.assertIsInstance(body["avg_score"], float)
 
     def test_backend_error_maps_to_status_and_retry_after_header(self) -> None:
         def failing_backend(texts: list[str]) -> list[tuple[str, float]]:
