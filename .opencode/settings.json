@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{
+        "type": "command",
+        "command": "echo 'TODO: add build command'",
+        "timeout": 15
+      }]
+    }],
+    "Stop": [{
+      "hooks": [{
+        "type": "command",
+        "command": "echo 'TODO: add test command'",
+        "timeout": 120
+      }]
+    }]
+  }
+}
